@@ -1,30 +1,40 @@
 package com.instagclone.imageservice.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 
-public class Image {
-    private Integer photoID;
-    private Integer userID;
+@Document(collection = "photo")
+public class Photo {
+
+    @Id
+    private String id;
+    private String photoID;
+    @Indexed
+    private String userID;
     private String photoPath;
     private Integer photoLat;
     private Integer photoLong;
     private Integer userLat;
     private Integer userLong;
+
     private Date creationDate;
 
-    public Integer getPhotoID() {
+    public String getPhotoID() {
         return photoID;
     }
 
-    public void setPhotoID(Integer photoID) {
+    public void setPhotoID(String photoID) {
         this.photoID = photoID;
     }
 
-    public Integer getUserID() {
+    public String getUserID() {
         return userID;
     }
 
-    public void setUserID(Integer userID) {
+    public void setUserID(String userID) {
         this.userID = userID;
     }
 

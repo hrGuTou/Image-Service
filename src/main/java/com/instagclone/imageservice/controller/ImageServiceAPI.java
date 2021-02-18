@@ -2,59 +2,92 @@ package com.instagclone.imageservice.controller;
 
 
 import com.alibaba.fastjson.JSONObject;
-import com.instagclone.imageservice.model.Image;
-import com.instagclone.imageservice.model.User;
-import com.instagclone.imageservice.service.ImageService;
+import com.instagclone.imageservice.model.Photo;
+import com.instagclone.imageservice.service.CloudinaryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/")
 public class ImageServiceAPI {
 
+
     @Autowired
-    ImageService imageService;
+    CloudinaryService cloudinaryService;
 
     /**
-     *  GET all images' metadata from database for the user
-     *
-     * @param: user object
-     * @return: list of img urls
+     * Health Check
+     * @return
      */
-    @GetMapping("/image")
-    public Object getImage(@RequestBody User user){
-        JSONObject res = new JSONObject();
-        List<String> imgURLs;
 
-        if(user==null) {
-            res.put("status", "Error");
-            res.put("error", "Required user object");
-            return res;
+    @GetMapping("/health")
+    public Object healthCheck(){
+        JSONObject response = new JSONObject();
+        response.put("Status","Online");
+        return response;
+    }
+
+
+    /**
+     *
+     * @param  "userId":string
+     * @param  "photo":photo object
+     * @return
+     *             "userId": string
+     *             "status": boolean
+     */
+
+    @PostMapping("/upload")
+    public Object uploadPhoto(@RequestHeader(value = "userId") String user, @RequestParam("photo")MultipartFile file){
+        JSONObject response = new JSONObject();
+
+        Boolean uploaderStat = cloudinaryService.upload(user, file);
+
+        response.put("userId", user);
+        response.put("status", uploaderStat);
+
+        return response;
+    }
+
+    /**
+     *  Retrieve single photo url
+     *
+     * @param "photoId":string
+     * @return
+     *          "photoURL":string
+     */
+    @GetMapping("/view")
+    public Object getPhoto(@RequestParam("photoId") String photo){
+        JSONObject response = new JSONObject();
+
+        String url = cloudinaryService.view(photo);
+        response.put("photoURL", url);
+        return response;
+    }
+
+    /**
+     *  Retrieve all photo urls for a defined user
+     *
+     */
+    @GetMapping("/viewAll")
+    public Object getAllPhoto(@RequestParam("userId") String user){
+        JSONObject response = new JSONObject();
+        List<String> url = new ArrayList<>();
+
+        List<Photo> res = cloudinaryService.findByUserId(user);
+        for(Photo p:res){
+            url.add(cloudinaryService.view(p.getPhotoID()));
         }
 
-        imgURLs = imageService.getAllImgURL(user.getUserID());
+        response.put("userId", user);
+        response.put("photoURL",url);
 
-        res.put("user", user);
-        res.put("imgURL", imgURLs);
-        return res;
+        return response;
     }
 
-    /**
-     *  Save image metadata into database for the user
-     *
-     * @param: user object, photo object
-     * @return: boolean status
-     */
-    @PostMapping("/image")
-    public Object saveImage(@RequestBody User user, Image image){
-        JSONObject res = new JSONObject();
-        boolean status;
-
-        status = imageService.saveImageURL(user.getUserID(),image.getPhotoPath());
-
-        res.put("status", status);
-        return res;
-    }
 }

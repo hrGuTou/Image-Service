@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import java.util.Date;
 
 public class User {
-    private Integer userID;
+    private String userID;
     private String name;
     private String email;
 
@@ -16,11 +16,11 @@ public class User {
     @JsonFormat(pattern = "MM/dd/yyyy")
     private Date lastLogin;
 
-    public Integer getUserID() {
+    public String getUserID() {
         return userID;
     }
 
-    public void setUserID(Integer userID) {
+    public void setUserID(String userID) {
         this.userID = userID;
     }
 

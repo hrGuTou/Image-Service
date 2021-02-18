@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.InstagClone</groupId>
-    <artifactId>image-service</artifactId>
+    <artifactId>photo-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>image-service</name>
+    <name>photo-service</name>
     <description>Demo project for Spring Boot</description>
     <properties>
         <java.version>1.8</java.version>
@@ -45,6 +45,13 @@
             <artifactId>fastjson</artifactId>
             <version>1.2.31</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.cloudinary</groupId>
+            <artifactId>cloudinary-http44</artifactId>
+            <version>1.17.0</version>
+        </dependency>
+
 
     </dependencies>
 

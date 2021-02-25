@@ -1,11 +1,13 @@
 package com.instagclone.imageservice;
 
+import com.instagclone.imageservice.controller.ImageServiceAPI;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-public class ImageServiceApplication extends SpringBootServletInitializer {
+@ComponentScan(basePackages={"com.instagclone"})
+public class ImageServiceApplication {
 
     public static void main(String[] args) {
         SpringApplication.run(ImageServiceApplication.class, args);

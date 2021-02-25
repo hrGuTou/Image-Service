@@ -4,6 +4,7 @@ package com.instagclone.imageservice.controller;
 import com.alibaba.fastjson.JSONObject;
 import com.instagclone.imageservice.model.Photo;
 import com.instagclone.imageservice.service.CloudinaryService;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -15,6 +16,8 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/")
 public class ImageServiceAPI {
+
+    private final org.slf4j.Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     @Autowired
@@ -44,12 +47,19 @@ public class ImageServiceAPI {
 
     @PostMapping("/upload")
     public Object uploadPhoto(@RequestHeader(value = "userId") String user, @RequestParam("photo")MultipartFile file){
+        logger.info("Called upload");
         JSONObject response = new JSONObject();
+        boolean uploaderStat = false;
+        // TODO: try catch
+        String publicID = cloudinaryService.upload(user, file);
 
-        Boolean uploaderStat = cloudinaryService.upload(user, file);
+        if(publicID != null){
+            uploaderStat = true;
+        }
 
         response.put("userId", user);
         response.put("status", uploaderStat);
+        response.put("public_id", publicID);
 
         return response;
     }
@@ -63,11 +73,7 @@ public class ImageServiceAPI {
      */
     @GetMapping("/view")
     public Object getPhoto(@RequestParam("photoId") String photo){
-        JSONObject response = new JSONObject();
-
-        String url = cloudinaryService.view(photo);
-        response.put("photoURL", url);
-        return response;
+        return cloudinaryService.view(photo);
     }
 
     /**
@@ -75,13 +81,13 @@ public class ImageServiceAPI {
      *
      */
     @GetMapping("/viewAll")
-    public Object getAllPhoto(@RequestParam("userId") String user){
+    public Object getAllPhoto(@RequestHeader("userId") String user){
         JSONObject response = new JSONObject();
         List<String> url = new ArrayList<>();
 
         List<Photo> res = cloudinaryService.findByUserId(user);
         for(Photo p:res){
-            url.add(cloudinaryService.view(p.getPhotoID()));
+            url.add(cloudinaryService.getPhotoURL(p.getPhotoID()));
         }
 
         response.put("userId", user);
@@ -89,5 +95,26 @@ public class ImageServiceAPI {
 
         return response;
     }
+
+    @DeleteMapping("/delete/")
+    public Object deletePhoto(@RequestHeader(value="userId") String user, @RequestParam String photoId){
+        JSONObject response = new JSONObject();
+
+        boolean res = false;
+        String error = "";
+
+        try{
+            res = cloudinaryService.deletePhoto(user, photoId);
+        }catch (Exception err){
+            error = err.getMessage();
+        }
+
+        response.put("userId", user);
+        response.put("status", res);
+        response.put("message", error);
+        return response;
+    }
+
+
 
 }

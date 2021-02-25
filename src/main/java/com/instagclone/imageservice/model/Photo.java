@@ -11,6 +11,7 @@ public class Photo {
 
     @Id
     private String id;
+    @Indexed
     private String photoID;
     @Indexed
     private String userID;

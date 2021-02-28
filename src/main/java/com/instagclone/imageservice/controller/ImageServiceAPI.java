@@ -71,9 +71,9 @@ public class ImageServiceAPI {
      * @return
      *          "photoURL":string
      */
-    @GetMapping("/view")
-    public Object getPhoto(@RequestParam("photoId") String photo){
-        return cloudinaryService.view(photo);
+    @GetMapping("/view/{photoId}")
+    public Object getPhoto(@PathVariable String photoId){
+        return cloudinaryService.view(photoId);
     }
 
     /**
